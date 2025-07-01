@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portafolio - Desarrollador Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define la fuente Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a2130; /* Fondo oscuro principal (gray-900) */
+            color: #e2e8f0; /* Texto claro (gray-200) */
+        }
+        /* Estilos personalizados para el desplazamiento suave */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Estilos para el efecto de sombra y redondeo */
+        .card {
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        .section-heading {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.75rem; /* Aumenta el padding para la línea */
+        }
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 70%; /* Controla el ancho de la línea */
+            height: 5px; /* Más gruesa */
+            background-color: #15165a; /* Color índigo de Tailwind para acento */
+            border-radius: 9999px; /* rounded-full */
+            left: 50%;  
+            transform: translateX(-50%); /* Centra la línea */
+        }
+        /* Animación para los botones */
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px); /* Un poco más de desplazamiento */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Sombra de hover más oscura */
+        }
+        /* Estilos para el modal de contacto */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Fijo en la pantalla */
+            z-index: 1000; /* Por encima de todo */
+            left: 0;
+            top: 0;
+            width: 100%; /* Ancho completo */
+            height: 100%; /* Alto completo */
+            overflow: auto; /* Habilitar scroll si es necesario */
+            background-color: rgba(0,0,0,0.7); /* Fondo semi-transparente más oscuro */
+            display: flex; /* Usar flexbox para centrar */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #2d3748; /* Fondo oscuro para el modal (gray-800) */
+            color: #e2e8f0; /* Texto claro para el modal */
+            padding: 2.5rem;
+            border-radius: 1rem; /* rounded-xl */
+            max-width: 550px; /* Un poco más ancho */
+            width: 90%;
+            position: relative;
+            animation: fadeIn 0.4s ease-out; /* Animación ligeramente más lenta */
+        }
+        .close-button {
+            color: #cbd5e0; /* Color claro para el botón de cerrar */
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2.2rem; /* Más grande */
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #f7fafc; /* Blanco al pasar el ratón */
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Estilos para los campos de formulario en el modal */
+        .modal-content input[type="text"],
+        .modal-content input[type="email"],
+        .modal-content textarea {
+            background-color: #4a5568; /* Fondo más oscuro para inputs (gray-700) */
+            color: #e2e8f0; /* Texto claro */
+            border: 1px solid #4a5568; /* Borde oscuro */
+        }
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="email"]:focus,
+        .modal-content textarea:focus {
+            border-color: #6366f1; /* Borde de enfoque azul-índigo */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* Sombra de enfoque */
+        }
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); } /* Inicia más pequeño */
+            to { opacity: 1; transform: scale(1); }
+        }
+        /* Animaciones para el hero */
+        @keyframes fade-in-down {
+            from { opacity: 0; transform: translateY(-30px); } /* Más desplazamiento */
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); } /* Más desplazamiento */
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down { animation: fade-in-down 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fade-in-up 1s ease-out forwards; animation-delay: 0.3s; }
+
+        /* Hover effect for skill/project cards */
+        .card-hover-effect:hover {
+            transform: translateY(-5px) scale(1.02); /* Levanta y agranda ligeramente */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6); /* Sombra más grande y oscura */
+            transition: all 0.3s ease-in-out;
+        }
+        .card-hover-effect {
+            transition: all 0.3s ease-in-out; /* Transición por defecto para un retorno suave */
+        }
+
+        /* Altura mínima para secciones, ajusta según el contenido y la estética deseada */
+        .min-height-section {
+            min-height: calc(100vh - 150px); /* 100vh menos espacio para navbar y footer/márgenes */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* Centrar el contenido de la sección */
+        }
+        /* Ajuste para secciones que no queremos centrar totalmente (ej. Portafolio, Habilidades) */
+        .min-height-section-top {
+            min-height: calc(100vh - 150px);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Alinear al inicio */
+            padding-top: 4rem; /* Ajusta el padding superior para que el contenido no esté pegado */
+            padding-bottom: 4rem; /* Ajusta el padding inferior */
+        }
+        /* Asegurar que el padding interno de las secciones siga funcionando */
+        .section-padding {
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+        @media (max-width: 768px) {
+            .min-height-section, .min-height-section-top {
+                min-height: auto; /* Desactiva min-height en móviles para evitar scrolls excesivos */
+            }
+        }
+    </style>
+</head>
+<body class="leading-relaxed">
+
+    <nav class="bg-gray-800 p-4 shadow-xl sticky top-0 z-50 rounded-b-xl">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            <a href="#" class="text-2xl font-bold text-indigo-400 rounded-lg p-2 hover:bg-gray-700 transition-colors">Mi Portafolio</a>
+            <button class="text-gray-300 md:hidden focus:outline-none" id="menu-toggle">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div class="w-full md:w-auto md:flex flex-grow items-center md:flex-row flex-col hidden" id="navbar-menu">
+                <ul class="md:flex md:ml-auto md:space-x-8 mt-4 md:mt-0 w-full md:w-auto items-center">
+                    <li><a href="#inicio" class="block py-2 px-4 text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg transition-colors text-lg">Inicio</a></li>
+                    <li><a href="#acerca-de" class="block py-2 px-4 text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg transition-colors text-lg">Acerca de</a></li>
+                    <li><a href="#habilidades" class="block py-2 px-4 text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg transition-colors text-lg">Habilidades</a></li>
+                    <li><a href="#portafolio" class="block py-2 px-4 text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg transition-colors text-lg">Portafolio</a></li>
+                    <li><a href="#contacto" class="block py-2 px-4 text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg transition-colors text-lg">Contacto</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header id="inicio" class="bg-gradient-to-r from-gray-900 to-indigo-950 text-white py-24 md:py-40 rounded-b-3xl flex items-center justify-center min-h-screen">
+        <div class="container mx-auto text-center px-4">
+            <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-4 animate-fade-in-down">
+                Hola, soy <span class="text-indigo-400"> Diego </span>
+            </h1>
+            <p class="text-xl md:text-3xl mb-10 animate-fade-in-up font-light">
+                Fullstack y Data Engineer, construyendo soluciones robustas y escalables.
+            </p>
+            <a href="#portafolio" class="bg-indigo-600 text-white px-10 py-5 rounded-full text-xl font-semibold inline-block hover:bg-indigo-700 transition duration-300 btn-primary shadow-lg">
+                Ver mis proyectos
+            </a>
+        </div>
+    </header>
+
+    <section id="acerca-de" class="bg-gray-800 rounded-xl mx-4 my-12 card min-height-section section-padding">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-gray-100 section-heading mx-auto">Acerca de Mí</h2>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-16">
+                <div class="md:w-2/3 text-lg text-gray-300 text-left leading-relaxed">
+                    <p class="mb-5">
+                        Soy un profesional versátil con experiencia en el ciclo de vida completo del desarrollo de software (Fullstack) y la construcción de infraestructuras de datos (Data Engineering). Disfruto diseñando arquitecturas escalables, desarrollando APIs eficientes y construyendo sistemas de procesamiento de datos robustos.
+                    </p>
+                    <p>
+                        Mi pasión radica en transformar datos crudos en información valiosa y crear aplicaciones que resuelvan problemas complejos de manera elegante y eficiente. Siempre estoy aprendiendo y explorando nuevas tecnologías para entregar soluciones de vanguardia.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="habilidades" class="bg-gray-900 rounded-xl mx-4 my-12 card min-height-section-top section-padding">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-16 text-gray-100 section-heading mx-auto">Mis Habilidades</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://placehold.co/80x80/2d3748/6366f1?text=%3C/%3E" alt="Fullstack" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">Fullstack Development</h3>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://placehold.co/80x80/2d3748/20c997?text=DB" alt="Data Engineering" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">Data Engineering</h3>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://www.vectorlogo.zone/logos/python/python-icon.svg" alt="Python" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">Python</h3>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg" alt="SQL" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">SQL</h3>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg" alt="JavaScript" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">JavaScript</h3>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg" alt="AWS" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">Cloud Platforms</h3>
+                </div>      
+                <div class="bg-gray-800 p-8 rounded-xl shadow-lg flex flex-col items-center justify-center card-hover-effect border border-gray-700">
+                    <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="Git" class="w-20 h-20 mb-4">
+                    <h3 class="text-xl font-semibold text-gray-100">Git</h3>
+                </div>  
+                </div>
+        </div>
+    </section>
+
+<section id="portafolio" class="bg-gray-800 rounded-xl mx-4 my-12 card min-height-section-top section-padding">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-16 text-gray-100 section-heading mx-auto">Portafolio SaaS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="bg-gray-900 rounded-xl shadow-lg overflow-hidden card-hover-effect border border-gray-700">
+                    <img src="https://placehold.co/600x400/374151/9ca3af?text=SaaS+Notes+App" alt="SaaS Notes App" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-semibold text-gray-100 mb-3">Aplicación de Notas Simple SaaS</h3>
+                        <p class="text-gray-300 mb-5 text-base">Desarrollo de una herramienta SaaS para crear, editar y organizar notas en línea. Soporta creación de usuarios y almacenamiento seguro de datos.</p>
+                        <div class="flex justify-start space-x-4">
+                            <a href="#" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-indigo-700 transition duration-300">Ver Demo</a>
+                            <a href="#" class="border border-gray-500 text-gray-300 px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-gray-700 hover:border-gray-600 transition duration-300">Código</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-900 rounded-xl shadow-lg overflow-hidden card-hover-effect border border-gray-700">
+                    <img src="https://placehold.co/600x400/374151/9ca3af?text=SaaS+Word+Counter" alt="SaaS Word Counter" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-semibold text-gray-100 mb-3">Contador de Texto SaaS</h3>
+                        <p class="text-gray-300 mb-5 text-base">Herramienta SaaS que permite a los usuarios pegar texto y obtener un recuento instantáneo de palabras y caracteres. Ideal para escritores y editores.</p>
+                        <div class="flex justify-start space-x-4">
+                            <a href="#" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-indigo-700 transition duration-300">Ver Demo</a>
+                            <a href="#" class="border border-gray-500 text-gray-300 px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-gray-700 hover:border-gray-600 transition duration-300">Código</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-900 rounded-xl shadow-lg overflow-hidden card-hover-effect border border-gray-700">
+                    <img src="https://placehold.co/600x400/374151/9ca3af?text=SaaS+Password+Gen" alt="SaaS Password Generator" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-semibold text-gray-100 mb-3">Generador de Contraseñas SaaS</h3>
+                        <p class="text-gray-300 mb-5 text-base">Aplicación SaaS para generar contraseñas fuertes y aleatorias con opciones personalizables. Enfocada en la seguridad y simplicidad de uso.</p>
+                        <div class="flex justify-start space-x-4">
+                            <a href="#" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-indigo-700 transition duration-300">Ver Demo</a>
+                            <a href="#" class="border border-gray-500 text-gray-300 px-5 py-2 rounded-lg text-lg font-medium inline-block hover:bg-gray-700 hover:border-gray-600 transition duration-300">Código</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="bg-gray-900 rounded-xl mx-4 my-12 card min-height-section section-padding">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-gray-100 section-heading mx-auto">Contáctame</h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                ¿Tienes una idea, un proyecto en mente o simplemente quieres saludar? ¡Me encantaría saber de ti!
+            </p>
+            <button id="openModalBtn" class="bg-indigo-600 text-white px-10 py-5 rounded-full text-xl font-semibold inline-block hover:bg-indigo-700 transition duration-300 btn-primary shadow-lg">
+                Enviar Mensaje
+            </button>
+        </div>
+    </section>
+
+    <div id="contactModal" class="modal hidden">
+        <div class="modal-content card">
+            <span class="close-button" id="closeModalBtn">&times;</span>
+            <h3 class="text-3xl font-bold text-gray-100 mb-8 text-center">Envíame un Mensaje</h3>
+            <form id="contactForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-gray-300 text-base font-bold mb-2">Nombre:</label>
+                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Tu Nombre Completo" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-gray-300 text-base font-bold mb-2">Email:</label>
+                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="tu_email@ejemplo.com" required>
+                </div>
+                <div>
+                    <label for="message" class="block text-gray-300 text-base font-bold mb-2">Mensaje:</label>
+                    <textarea id="message" name="message" rows="6" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition duration-300 btn-primary shadow-lg">
+                        Enviar Mensaje
+                    </button>
+                </div>
+            </form>
+            <div id="formMessage" class="mt-6 text-center text-base font-semibold hidden"></div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-950 text-white py-10 mt-12 rounded-t-3xl shadow-inner">
+        <div class="container mx-auto text-center px-4">
+            <p class="text-gray-400 mb-4">&copy; 2025 Diego. Todos los derechos reservados.</p>
+            <div class="flex justify-center space-x-8 mt-4">
+                <a href="https://www.linkedin.com/in/diego-eduardo-huaman-mayanga-9a012b246/" class="text-gray-400 hover:text-indigo-400 transition-colors text-xl">
+                    <svg class="w-7 h-7 inline-block align-middle" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.761-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.764 7 2.405v6.83zm0 0"></path></svg>
+                    <span class="sr-only">LinkedIn</span>
+                </a>
+                <a href="https://github.com/D13g00Edu?tab=repositories" class="text-gray-400 hover:text-indigo-400 transition-colors text-xl">
+                    <svg class="w-7 h-7 inline-block align-middle" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.799 8.207 11.387.6.11.817-.26.817-.577v-1.993c-3.344.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.758-1.333-1.758-1.09-.745.083-.729.083-.729 1.205.086 1.838 1.238 1.838 1.238 1.07 1.833 2.808 1.304 3.492 1 .107-.775.418-1.305.762-1.604-2.665-.3-5.464-1.332-5.464-5.93 0-1.31.465-2.382 1.235-3.22-.124-.3-.535-1.524.118-3.18 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.4 3-.405 1.017.005 2.043.139 3 .405 2.293-1.552 3.3-1.23 3.3-1.23.653 1.656.242 2.88.118 3.18.77.838 1.234 1.91 1.234 3.22 0 4.611-2.803 5.624-5.474 5.923.43.37.823 1.102.823 2.222v3.293c0 .319.21.693.824.576C20.565 21.795 24 17.302 24 12c0-6.627-5.373-12-12-12z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">GitHub</span>
+                </a>
+                </div>
+        </div>
+    </footer>
+
+<script>
+        // JavaScript para desplazamiento suave y navegación móvil
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // **INICIO DE LA CORRECCIÓN**
+            // Obtener la altura del navbar para el offset de scroll
+            const navbar = document.querySelector('nav');
+            let navbarHeight = navbar.offsetHeight;
+
+            // Manejar el desplazamiento suave para los enlaces de anclaje
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Calcular la posición de scroll, restando la altura del navbar
+                        const scrollPosition = targetElement.offsetTop - navbarHeight;
+
+                        window.scrollTo({
+                            top: scrollPosition,
+                            behavior: 'smooth'
+                        });
+
+                        // Cierra el menú móvil después de hacer clic en un enlace
+                        const navbarMenu = document.getElementById('navbar-menu');
+                        if (navbarMenu.classList.contains('flex')) {
+                            navbarMenu.classList.remove('flex');
+                            navbarMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Lógica para el menú móvil (hamburguesa)
+            const menuToggle = document.getElementById('menu-toggle');
+            const navbarMenu = document.getElementById('navbar-menu');
+
+            menuToggle.addEventListener('click', () => {
+                navbarMenu.classList.toggle('hidden');
+                navbarMenu.classList.toggle('flex');
+                navbarMenu.classList.toggle('flex-col'); // Asegura que los ítems se apilen en móvil
+            });
+
+            // Lógica para el Modal de Contacto
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const contactModal = document.getElementById('contactModal');
+            const contactForm = document.getElementById('contactForm');
+            const formMessage = document.getElementById('formMessage');
+
+            openModalBtn.addEventListener('click', () => {
+                contactModal.classList.remove('hidden'); // Muestra el modal
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                contactModal.classList.add('hidden'); // Oculta el modal
+                formMessage.classList.add('hidden'); // Oculta el mensaje del formulario al cerrar
+            });
+
+            // Cierra el modal si el usuario hace clic fuera del contenido
+            window.addEventListener('click', (event) => {
+                if (event.target === contactModal) {
+                    contactModal.classList.add('hidden');
+                    formMessage.classList.add('hidden'); // Oculta el mensaje del formulario al cerrar
+                }
+            });
+
+            // Manejo del envío del formulario (ejemplo simple)
+            contactForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Previene el envío por defecto del formulario
+
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+
+                formMessage.classList.remove('hidden', 'text-red-500', 'text-green-500');
+                formMessage.textContent = 'Enviando mensaje...';
+                formMessage.classList.add('text-gray-400'); // Color neutral mientras se envía
+                formMessage.style.display = 'block';
+
+                setTimeout(() => {
+                    // Simula un envío exitoso
+                    if (name && email && message) {
+                        formMessage.textContent = '¡Mensaje enviado con éxito! Te contactaré pronto.';
+                        formMessage.classList.remove('text-gray-400');
+                        formMessage.classList.add('text-green-500');
+                        contactForm.reset(); // Limpia el formulario
+                        setTimeout(() => {
+                            contactModal.classList.add('hidden'); // Cierra el modal después de un tiempo
+                            formMessage.classList.add('hidden'); // Oculta el mensaje
+                        }, 2500); // Cierra el modal después de 2.5 segundos
+                    } else {
+                        formMessage.textContent = 'Por favor, completa todos los campos requeridos.';
+                        formMessage.classList.remove('text-gray-400');
+                        formMessage.classList.add('text-red-500');
+                    }
+                }, 1800); // Simula un retraso de red ligeramente más largo
+            });
+        });
+    </script>
+</body>
+</html>
